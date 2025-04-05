@@ -1,4 +1,4 @@
-import sys 
+import sys  
 import os 
 import streamlit as st
 from dotenv import load_dotenv
@@ -12,25 +12,18 @@ from pdf2image import convert_from_bytes
 from PIL import Image
 import pytesseract
 
-# Google AI and LangChain
-import google.generativeai as genai
+# LangChain & Transformers
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseLLM
+from langchain.embeddings import HuggingFaceEmbeddings
 from transformers import pipeline
 
 # Load Environment Variables
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    st.error("GOOGLE_API_KEY not found. Check your .env file or environment variables.")
-    st.stop()
-
-# Configure Google AI API
-genai.configure(api_key=GOOGLE_API_KEY)
 
 # ------------------------------ #
 # TEXT EXTRACTION FUNCTIONS
@@ -61,23 +54,23 @@ def split_text_into_chunks(text):
     return splitter.split_text(text)
 
 # ------------------------------ #
-# FAISS VECTOR STORE IMPLEMENTATION
+# FAISS VECTOR STORE
 # ------------------------------ #
 
 def store_in_vector_db(chunks, embeddings):
-    """Store embeddings in FAISS index"""
+    """Store embeddings in FAISS index."""
     vector_store = FAISS.from_texts(chunks, embeddings)
     vector_store.save_local("faiss_index")
     return vector_store
 
 def load_vector_store(embeddings):
-    """Load FAISS index from disk"""
+    """Load FAISS index from disk."""
     if Path("faiss_index").exists():
         return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
     return None
 
 # ------------------------------ #
-# CUSTOM HUGGINGFACE RUNNABLE
+# HUGGINGFACE DISTILGPT2 WRAPPER
 # ------------------------------ #
 
 class HuggingFaceRunnable(BaseLLM):
@@ -85,7 +78,7 @@ class HuggingFaceRunnable(BaseLLM):
         self.pipeline = pipeline
 
     def _call(self, prompt: str, stop: list = None) -> str:
-        response = self.pipeline(prompt, max_length=100, num_return_sequences=1)
+        response = self.pipeline(prompt, max_length=300, num_return_sequences=1, do_sample=True)
         return response[0]['generated_text']
 
 # ------------------------------ #
@@ -93,9 +86,9 @@ class HuggingFaceRunnable(BaseLLM):
 # ------------------------------ #
 
 def get_conversational_chain(retriever):
-    """Create conversation chain with FAISS retriever."""
     prompt_template = PromptTemplate(
-        template="""Answer concisely in 1-3 sentences using only the context.
+        template="""
+        Answer concisely in 1-3 sentences using only the context.
         If unsure, say: "I don't have enough information."
 
         Context:
@@ -109,10 +102,7 @@ def get_conversational_chain(retriever):
         input_variables=["context", "question"]
     )
 
-    # Use Hugging Face's distilbert model for generating responses
     model_pipeline = pipeline("text-generation", model="distilgpt2", tokenizer="distilgpt2")
-
-    # Wrap the HuggingFace model pipeline into a custom Runnable class
     hf_runnable = HuggingFaceRunnable(model_pipeline)
 
     memory = ConversationBufferMemory(
@@ -136,13 +126,12 @@ def get_conversational_chain(retriever):
 def main():
     st.set_page_config(page_title="FAISS PDF Chatbot", page_icon="📚")
     
-    # Use a supported embedding model here (Hugging Face )
-    embeddings = HuggingFaceEmbeddings(model="distilbert-base-nli-mean-tokens")  
-    
-    # Sidebar
+    embeddings = HuggingFaceEmbeddings(model_name="distilbert-base-nli-mean-tokens")
+
+    # Sidebar for PDF Upload
     with st.sidebar:
-        st.title("PDF Upload")
-        pdf_docs = st.file_uploader("Upload your PDF files", accept_multiple_files=True)
+        st.title("📄 Upload PDFs")
+        pdf_docs = st.file_uploader("Upload PDF files", accept_multiple_files=True)
         
         if st.button("Process Documents"):
             with st.spinner("Processing..."):
@@ -153,29 +142,26 @@ def main():
                 raw_text = extract_text_from_pdf(pdf_docs)
                 text_chunks = split_text_into_chunks(raw_text)
                 store_in_vector_db(text_chunks, embeddings)
-                st.success("Documents processed successfully!")
+                st.success("✅ Documents processed successfully!")
 
-    # Main interface
-    st.title("📚 Chat with PDFs using FAISS")
-    
-    # Initialize chat history
+    # Chat UI
+    st.title("🤖 Chat with PDFs using DistilGPT-2")
+
     if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Upload PDFs to begin chatting"}]
+        st.session_state.messages = [{"role": "assistant", "content": "Upload PDFs to begin chatting."}]
 
-    # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-    # Chat input
-    if prompt := st.chat_input("Ask about your documents"):
+    if prompt := st.chat_input("Ask a question about your documents"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.write(prompt)
         
         vector_store = load_vector_store(embeddings)
         if not vector_store:
-            st.error("Please process documents first")
+            st.error("Please process documents first.")
             return
             
         with st.chat_message("assistant"):
