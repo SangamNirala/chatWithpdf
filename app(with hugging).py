@@ -136,8 +136,8 @@ def get_conversational_chain(retriever):
 def main():
     st.set_page_config(page_title="FAISS PDF Chatbot", page_icon="📚")
     
-    # Use a supported embedding model here (Hugging Face or Google, depending on your choice)
-    embeddings = HuggingFaceEmbeddings(model="distilbert-base-nli-mean-tokens")  # 👈 Update the embedding model if required
+    # Use a supported embedding model here (Hugging Face )
+    embeddings = HuggingFaceEmbeddings(model="distilbert-base-nli-mean-tokens")  
     
     # Sidebar
     with st.sidebar:
