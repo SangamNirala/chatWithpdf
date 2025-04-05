@@ -1,108 +1,75 @@
 # Gemini PDF Chatbot
 
 Gemini PDF Chatbot is a Streamlit-based application that allows users to chat with a conversational AI model trained on PDF documents. The chatbot extracts information from uploaded PDF files and answers user questions based on the provided context.
-<https://gmultichat.streamlit.app/>
+
 
 <https://github.com/kaifcoder/gemini_multipdf_chat/assets/57701861/f6a841af-a92d-4e54-a4fd-4a52117e17f6>
 
-## Features
 
-- **PDF Upload:** Users can upload multiple PDF files.
-- **Text Extraction:** Extracts text from uploaded PDF files.
-- **Conversational AI:** Uses the Gemini conversational AI model to answer user questions.
-- **Chat Interface:** Provides a chat interface to interact with the chatbot.
 
-## Getting Started
+## Introduction
+Welcome to the **Gemini PDF Chatbot**! This innovative application leverages the power of Streamlit, Google Cloud Vision API, and LangChain to provide users with an interactive platform for querying information from PDF documents. Whether you're dealing with digital or scanned PDFs, this chatbot can extract text and facilitate meaningful conversations about the content.
 
-If you have docker installed, you can run the application using the following command:
+## Key Features
+- **Multi-PDF Upload**: Seamlessly upload multiple PDF files for processing.
+- **Text Extraction**: Utilize advanced OCR capabilities to extract text from both digital and scanned documents.
+- **Conversational Interface**: Engage with the chatbot to ask questions and receive contextually relevant answers.
+- **Metadata Filtering**: Filter search results based on document metadata for enhanced relevance.
+- **Reranking**: Improve the accuracy of search results through intelligent reranking mechanisms.
 
-- Obtain a Google API key and set it in the `.env` file.
+## Prerequisites
+Before you begin, ensure you have the following installed:
+- Python 3.7 or higher
+- Required Python packages (listed in `requirements.txt`)
 
-   ```.env
-   GOOGLE_API_KEY=your_api_key_here
-   ```
-
-```bash
-docker compose up --build
-```
-
-Your application will be available at <http://localhost:8501>.
-
-### Deploying your application to the cloud
-
-First, build your image, e.g.: `docker build -t myapp .`.
-If your cloud uses a different CPU architecture than your development
-machine (e.g., you are on a Mac M1 and your cloud provider is amd64),
-you'll want to build the image for that platform, e.g.:
-`docker build --platform=linux/amd64 -t myapp .`.
-
-Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
-
-Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
-docs for more detail on building and pushing.
-
-### References
-
-- [Docker's Python guide](https://docs.docker.com/language/python/)
-
-## Local Development
-
-Follow these instructions to set up and run this project on your local machine.
-
-   **Note:** This project requires Python 3.10 or higher.
-
-1. **Clone the Repository:**
-
+## Installation Steps
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/gemini-pdf-chatbot.git
+   git clone <repository-url>
+   cd <repository-directory>
    ```
 
-2. **Install Dependencies:**
-
+2. **Install Required Packages**:
+   Install the necessary Python libraries using pip:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Set up Google API Key:**
-   - Obtain a Google API key and set it in the `.env` file.
+3. **Set Up Google Cloud Credentials**:
+   - Create a service account in the Google Cloud Console and download the JSON key file.
+   - Set the environment variable for Google Cloud credentials:
+     ```bash
+     export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials.json"
+     ```
 
-   ```bash
-   GOOGLE_API_KEY=your_api_key_here
+4. **Configure Environment Variables**:
+   Create a `.env` file in the project root directory and add your Google API key:
+   ```plaintext
+   GOOGLE_API_KEY=your_google_api_key
    ```
 
-4. **Run the Application:**
-
+## Running the Application
+1. **Start the Streamlit Application**:
+   Launch the application with the following command:
    ```bash
-   streamlit run main.py
+   streamlit run app.py
    ```
 
-5. **Upload PDFs:**
-   - Use the sidebar to upload PDF files.
-   - Click on "Submit & Process" to extract text and generate embeddings.
+2. **Access the Application**:
+   Open your web browser and navigate to `http://localhost:8501` to interact with the chatbot.
 
-6. **Chat Interface:**
-   - Chat with the AI in the main interface.
+3. **Upload PDFs and Ask Questions**:
+   Use the sidebar to upload your PDF documents. Once uploaded, you can type your questions in the chat interface to receive answers based on the content of the PDFs.
 
-## Project Structure
+## Contributing
+We welcome contributions to enhance the functionality and performance of the Gemini PDF Chatbot. If you have suggestions or improvements, please feel free to open an issue or submit a pull request.
 
-- `app.py`: Main application script.
-- `.env`: file which will contain your environment variable.
-- `requirements.txt`: Python packages required for working of the app.
-- `README.md`: Project documentation.
-
-## Dependencies
-
-- PyPDF2
-- langchain
-- Streamlit
-- google.generativeai
-- dotenv
+## License
+This project is licensed under the MIT License. For more details, please refer to the LICENSE file.
 
 ## Acknowledgments
+- **Google Cloud Vision API**: For providing powerful OCR capabilities.
+- **LangChain**: For enabling conversational AI functionalities.
+- **ChromaDB**: For efficient document storage and retrieval.
 
-- [Google Gemini](https://ai.google.com/): For providing the underlying language model.
-- [Streamlit](https://streamlit.io/): For the user interface framework.
-# chatwithpdf
-# ChatPdf
-# ChatPdf
-# ChatPdf
+Thank you for using the Gemini PDF Chatbot! We hope it enhances your productivity and makes working with PDFs easier and more interactive.
