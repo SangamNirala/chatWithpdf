@@ -46,6 +46,8 @@ Before you begin, ensure you have the following installed:
    Create a `.env` file in the project root directory and add your Google API key:
    ```plaintext
    GOOGLE_API_KEY=your_google_api_key
+   HUGGINGFACEHUB_API_TOKEN=""
+   GOOGLE_APPLICATION_CREDENTIALS=""
    ```
 
 ## Running the Application
