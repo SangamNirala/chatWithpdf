@@ -97,7 +97,7 @@ def get_conversational_chain(retriever):
 
     model = ChatGoogleGenerativeAI(
       
-        model="models/gemma-3-1b-it",  # Alternative format if above doesn't work
+        model="models/gemma-3-1b-it",  
        
         temperature=0.3,
         max_output_tokens=150
