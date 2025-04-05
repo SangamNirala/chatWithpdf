@@ -11,3 +11,4 @@ pytesseract
 senetence_transformers
 pdf2image
 langdetect
+transformers
